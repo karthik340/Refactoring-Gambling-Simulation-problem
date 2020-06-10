@@ -1,3 +1,5 @@
+
+
 #!/bin/bash -x
 
 STAKE=100
@@ -54,10 +56,48 @@ function findAmountWonFor20Days {
 	echo ${storeAmountPerDay[*]}
 }
 
+
+function findLuckiestAndUnLuckiestDays {
+
+
+	local storeArray=($(echo "$@"))
+
+	luckyDay=1
+	unLuckyDay=1
+	local cumulativeAmount=0
+	local amountOnLuckyDay=0
+	local amountOnUnLuckyDay=0
+
+	local day=1
+	for amountWonPerDay in ${storeArray[@]}
+	do
+		cumulativeAmount=$(($cumulativeAmount+$amountWonPerDay))
+		if [ $cumulativeAmount -gt $amountOnLuckyDay ]
+		then
+			amountOnLuckyDay=$cumulativeAmount
+			luckyDay=$day	
+		fi
+		if [ $cumulativeAmount -lt $amountOnUnLuckyDay ]
+		then
+			amountOnUnLuckyDay=$cumulativeAmount
+			unLuckyDay=$day	
+		fi 
+		day=$(($day+1))
+	done
+
+}
+
+
 read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
 
 storeAmountPerDay=($(findAmountWonFor20Days))
-echo "Amounts won or lost per day "
+
+arg1=$(echo ${storeAmountPerDay[@]})
+findLuckiestAndUnLuckiestDays $arg1 
+
+echo "luckiest day" $luckyDay
+echo "unluckiestday" $unLuckyDay
+echo " "
 echo ${storeAmountPerDay[@]}
 
 
