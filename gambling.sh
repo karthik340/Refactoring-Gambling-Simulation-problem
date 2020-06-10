@@ -1,3 +1,4 @@
+
 #!/bin/bash -x
 
 STAKE=100
@@ -19,12 +20,9 @@ function findResultOfBet {
 
 function findAmountWonPerDay {
 
-
-	read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
-
 	local totalAmountPerDay=0
 	local variableAmount=$(($percent*$STAKE))
-	variableAmount=$(($variableAmount/100))
+	local variableAmount=$(($variableAmount/100))
 	local maxAmount=$variableAmount
 	local minAmount=$((-1*$variableAmount))
 
@@ -43,9 +41,23 @@ function findAmountWonPerDay {
 }
 
 
-totalAmountWonPerDay=$(findAmountWonPerDay)
+function findAmountWonFor20Days {
 
-echo $totalAmountWonPerDay
+	local AmountWonFor20Days=0
+	local totalAmountWonPerDay=0
+	for (( day=0;day<20;day++ ))
+	do 
+	totalAmountWonPerDay=$(findAmountWonPerDay)
+	AmountWonFor20Days=$((AmountWonFor20Days+totalAmountWonPerDay))
+	done
+	echo $AmountWonFor20Days
+}
+
+read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
+
+AmountWonFor20Days=$(findAmountWonFor20Days)
+echo $AmountWonFor20Days
+
 
 
 
