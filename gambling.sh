@@ -1,4 +1,3 @@
-
 #!/bin/bash -x
 
 STAKE=100
@@ -42,23 +41,24 @@ function findAmountWonPerDay {
 
 
 function findAmountWonFor20Days {
-
+	local counter=0
 	local AmountWonFor20Days=0
 	local totalAmountWonPerDay=0
+	local storeAmountPerDay
 	for (( day=0;day<20;day++ ))
 	do 
 	totalAmountWonPerDay=$(findAmountWonPerDay)
+	storeAmountPerDay[((counter++))]=$totalAmountWonPerDay
 	AmountWonFor20Days=$((AmountWonFor20Days+totalAmountWonPerDay))
 	done
-	echo $AmountWonFor20Days
+	echo ${storeAmountPerDay[*]}
 }
 
 read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
 
-AmountWonFor20Days=$(findAmountWonFor20Days)
-echo $AmountWonFor20Days
-
-
+storeAmountPerDay=($(findAmountWonFor20Days))
+echo "Amounts won or lost per day "
+echo ${storeAmountPerDay[@]}
 
 
 
