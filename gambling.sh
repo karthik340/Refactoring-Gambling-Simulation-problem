@@ -1,5 +1,3 @@
-
-
 #!/bin/bash -x
 
 STAKE=100
@@ -84,21 +82,44 @@ function findLuckiestAndUnLuckiestDays {
 		fi 
 		day=$(($day+1))
 	done
+	echo $cumulativeAmount
+}
+
+function checkToContinueNextMonth {
+
+	local totalAmountWonFor20Days=$1
+	if [ $totalAmountWonFor20Days -gt 0 ]
+	then
+		echo 1
+	else
+		echo 0
+	fi
 
 }
 
+checkToContinue=1
+while [ $checkToContinue -eq 1 ]
+do
+	read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
 
-read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
+	storeAmountPerDay=($(findAmountWonFor20Days))
 
-storeAmountPerDay=($(findAmountWonFor20Days))
+	arg1=$(echo ${storeAmountPerDay[@]})
+	totalAmountFor20Days=$(findLuckiestAndUnLuckiestDays $arg1) 
 
-arg1=$(echo ${storeAmountPerDay[@]})
-findLuckiestAndUnLuckiestDays $arg1 
+	echo "luckiest day"$luckyDay
+	echo "unluckiestday"$unLuckyDay
+	echo " "
+	echo ${storeAmountPerDay[@]}
+	checkToContinue=$(checkToContinueNextMonth $totalAmountFor20Days)
+	if [ $checkToContinue -eq 1 ]
+	then
+		read -p "do you wan to continue for next month 1.Yes 2.No "checkToContinue 
+	else
+		checkToContinue=0	
+	fi
+done
 
-echo "luckiest day" $luckyDay
-echo "unluckiestday" $unLuckyDay
-echo " "
-echo ${storeAmountPerDay[@]}
 
 
 
