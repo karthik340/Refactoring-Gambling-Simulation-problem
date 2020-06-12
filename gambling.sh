@@ -15,16 +15,19 @@ function findResultOfBet {
 
 }
 
+function findMaxAndMinAmountPerDay {
+
+variableAmount=$(($percent*$STAKE))
+variableAmount=$(($variableAmount/100))
+maxAmount=$variableAmount
+minAmount=$((-1*$variableAmount))
+
+}
 
 
 function findAmountWonPerDay {
 
 	local totalAmountPerDay=0
-	local variableAmount=$(($percent*$STAKE))
-	local variableAmount=$(($variableAmount/100))
-	local maxAmount=$variableAmount
-	local minAmount=$((-1*$variableAmount))
-
 	while [ $totalAmountPerDay -lt $maxAmount -a $totalAmountPerDay -gt $minAmount ]
 	do
 		local result=$(findResultOfBet)
@@ -82,7 +85,7 @@ function findLuckiestAndUnLuckiestDays {
 		fi 
 		day=$(($day+1))
 	done
-	echo $cumulativeAmount
+	echo "$luckyDay $unLuckyDay $cumulativeAmount"
 }
 
 function checkToContinueNextMonth {
@@ -97,28 +100,46 @@ function checkToContinueNextMonth {
 
 }
 
+
+function startGambling {
+
 checkToContinue=1
 while [ $checkToContinue -eq 1 ]
 do
-	read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
-
 	storeAmountPerDay=($(findAmountWonFor20Days))
 
 	arg1=$(echo ${storeAmountPerDay[@]})
-	totalAmountFor20Days=$(findLuckiestAndUnLuckiestDays $arg1) 
+	read luckyDay unLuckyDay totalAmountFor20Days < <(findLuckiestAndUnLuckiestDays $arg1)
 
-	echo "luckiest day"$luckyDay
-	echo "unluckiestday"$unLuckyDay
+	echo "luckiest day = "$luckyDay
+	echo "unluckiestday = "$unLuckyDay
+	echo "Amount won for 20 days = "$totalAmountFor20Days
 	echo " "
 	echo ${storeAmountPerDay[@]}
 	checkToContinue=$(checkToContinueNextMonth $totalAmountFor20Days)
 	if [ $checkToContinue -eq 1 ]
 	then
-		read -p "do you wan to continue for next month 1.Yes 2.No "checkToContinue 
+		read -p "do you wan to continue for next month 1.Yes 2.No " checkToContinue 
 	else
 		checkToContinue=0	
 	fi
 done
+}
+
+read -p "enter the percentage of won or loss of stake to stop betting for that day" percent
+findMaxAndMinAmountPerDay
+startGambling
+
+
+
+
+
+
+
+
+
+
+
 
 
 
